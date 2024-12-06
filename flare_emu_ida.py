@@ -11,22 +11,25 @@ class IdaProAnalysisHelper(flare_emu.AnalysisHelper):
     def __init__(self, eh):
         super(IdaProAnalysisHelper, self).__init__()
         self.eh = eh
-        info = idaapi.get_inf_structure()
-        if info.procname == "metapc":
+        
+        procname = idaapi.inf_get_procname()
+        filetype = idaapi.inf_get_filetype()
+        if procname == "metapc":
             self.arch = "X86"
         else:
-            self.arch = info.procname
-        if info.is_64bit():
+            self.arch = procname
+        if idaapi.inf_is_64bit():
             self.bitness = 64
-        elif info.is_32bit():
+        elif idaapi.idainfo_is_32bit():
             self.bitness = 32
         else:
             self.bitness = None
-        if info.filetype == 11:
-            self.filetype = "PE"
-        elif info.filetype == 25:
+
+        if filetype == 11:
+            filetype = "PE"
+        elif filetype == 25:
             self.filetype = "MACHO"
-        elif info.filetype == 18:
+        elif filetype == 18:
             self.filetype = "ELF"
         else:
             self.filetype = "UNKNOWN"
